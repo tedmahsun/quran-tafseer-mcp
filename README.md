@@ -1,2 +1,2 @@
 # quran-tafseer-mcp
-Quran Tafsir Comparison MCP Server
+Quran Tafseer MCP Server
