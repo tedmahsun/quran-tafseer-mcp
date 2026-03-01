@@ -215,7 +215,7 @@ quran-tafseer-mcp-data/
 - [Tanzil](https://tanzil.net/)
 - [Quranic Universal Library](https://qul.tarteel.ai/)
 - [QuranEnc.com](https://quranenc.com/en/home)
-- [Nurul Zaman](https://github.com/hanisahkz)
+- [Nurul Hanisah Kamarul Zaman](https://github.com/hanisahkz)
 
 ## License
 
