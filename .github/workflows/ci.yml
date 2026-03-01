@@ -28,11 +28,18 @@ jobs:
         uses: gcarreno/setup-lazarus@v3
         with:
           lazarus-version: stable
-          with-cache: true
 
       - name: Install SQLite (Linux)
         if: runner.os == 'Linux'
         run: sudo apt-get update && sudo apt-get install -y libsqlite3-0
+
+      - name: Install SQLite (Windows)
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: |
+          Invoke-WebRequest -Uri "https://www.sqlite.org/2024/sqlite-dll-win-x64-3470200.zip" -OutFile sqlite.zip
+          Expand-Archive sqlite.zip -DestinationPath .
+          Copy-Item sqlite3.dll -Destination .
 
       - name: Build (Debug)
         run: lazbuild --build-mode=Debug quran-tafseer-mcp.lpi
