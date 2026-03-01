@@ -1,0 +1,88 @@
+name: Release
+
+on:
+  push:
+    tags: ['v*']
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            binary: quran-tafseer-mcp.exe
+            asset_name: quran-tafseer-mcp-windows-x64.exe
+          - os: ubuntu-latest
+            binary: quran-tafseer-mcp
+            asset_name: quran-tafseer-mcp-linux-x64
+          - os: macos-latest
+            binary: quran-tafseer-mcp
+            asset_name: quran-tafseer-mcp-macos-arm64
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Free Pascal (Windows)
+        if: runner.os == 'Windows'
+        uses: nickg/setup-fpc@v1
+        with:
+          version: '3.2.2'
+          lazarus-version: '3.6'
+
+      - name: Install Free Pascal (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y fpc lazarus libsqlite3-0
+
+      - name: Install Free Pascal (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew install fpc lazarus sqlite
+
+      - name: Build
+        run: lazbuild quran-tafseer-mcp.lpi
+
+      - name: Run tests
+        run: |
+          bash tests/test_m0.sh ./${{ matrix.binary }}
+          bash tests/test_m1.sh ./${{ matrix.binary }}
+          bash tests/test_m1_5a.sh ./${{ matrix.binary }}
+          bash tests/test_m2.sh ./${{ matrix.binary }}
+          bash tests/test_m3.sh ./${{ matrix.binary }}
+          bash tests/test_m4.sh ./${{ matrix.binary }}
+          bash tests/test_m5.sh ./${{ matrix.binary }}
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.asset_name }}
+          path: ${{ matrix.binary }}
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts
+
+      - name: Create release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${{ github.ref_name }}" \
+            --repo "${{ github.repository }}" \
+            --title "${{ github.ref_name }}" \
+            --generate-notes \
+            artifacts/quran-tafseer-mcp-windows-x64.exe/quran-tafseer-mcp.exe#quran-tafseer-mcp-windows-x64.exe \
+            artifacts/quran-tafseer-mcp-linux-x64/quran-tafseer-mcp#quran-tafseer-mcp-linux-x64 \
+            artifacts/quran-tafseer-mcp-macos-arm64/quran-tafseer-mcp#quran-tafseer-mcp-macos-arm64

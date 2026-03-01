@@ -1,0 +1,11 @@
+{
+  "id": "ar.uthmani",
+  "kind": "quran_arabic",
+  "language": "ar",
+  "title": "Uthmani Script (Hafs)",
+  "source": "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/ara-quranuthmanihaf.json",
+  "license_note": "Quran text",
+  "format": "tsv_surah_ayah_text",
+  "checksum": "sha256:dbae8de5e757ba61de58a8d906dcb1ef7d3d930c3f26564e4fa062a47effa580",
+  "origin": "bundled"
+}

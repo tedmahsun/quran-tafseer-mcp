@@ -1,0 +1,13 @@
+{
+  "id": "en.palmer.1880",
+  "kind": "quran_translation",
+  "language": "en",
+  "title": "The Qur'an (Palmer)",
+  "translator": "E. H. Palmer",
+  "source": "https://en.wikisource.org/wiki/The_Qur%27an_(Palmer)",
+  "license_note": "Public domain (author died 1882)",
+  "format": "tsv_surah_ayah_text",
+  "checksum": "sha256:81f5357c6f48e502aa452257bb08e1b5ee7270d228c32cb607636f6abd653393",
+  "origin": "bundled",
+  "year": 1880
+}

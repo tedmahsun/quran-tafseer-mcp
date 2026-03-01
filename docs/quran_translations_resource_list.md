@@ -24,10 +24,10 @@ Six public-domain English translations ship in `bundled/quran/` and are copied t
 - M. H. Shakir — Project Gutenberg (date uncertain; year dropped from corpus ID)
 
 ### Tier 2 — Catalog-downloadable (user selects during setup)
-All English translations available from Tanzil, Tarteel/QUL, and QuranEnc are listed in a static `catalog/translations.json` file shipped with the server. Users browse and select translations during first-run setup (via `quranref init` or `quran.setup` MCP tool). Downloads are from the original source sites, verified by SHA-256 checksum.
+English translations available from quran-api, Tanzil, Tarteel/QUL, and QuranEnc are listed in a static `catalog/translations.json` file shipped with the server. The primary source is **quran-api** ([fawazahmed0/quran-api](https://github.com/fawazahmed0/quran-api), The Unlicense), which provides 440+ translations via CDN. Users browse and select translations during first-run setup (via `quran-tafseer-mcp init` or `quran.setup` MCP tool). Downloads are verified by SHA-256 checksum where available.
 
 ### Tier 3 — Manual import (user-acquired)
-Any translation the user has obtained separately can be imported via `quranref corpus add`. This is the fallback for translations not in the catalog, copyrighted texts the user is licensed to use, or custom/personal translations.
+Any translation the user has obtained separately can be imported via `quran-tafseer-mcp corpus add`. This is the fallback for translations not in the catalog, copyrighted texts the user is licensed to use, or custom/personal translations.
 
 ---
 
@@ -63,31 +63,39 @@ Three popular English translations from a single Project Gutenberg package, pre-
 
 ## 4) Catalog sources (providers the catalog draws from)
 
-The static translation catalog (`catalog/translations.json`) aggregates translations from these three providers. Users do not need to visit these sites manually; the `quranref init` CLI and `quran.setup` MCP tool handle browsing, selection, and download.
+The static translation catalog (`catalog/translations.json`) aggregates translations from these providers. Users do not need to visit these sites manually; the `quran-tafseer-mcp init` CLI and `quran.setup` MCP tool handle browsing, selection, and download.
 
-### Tanzil
-The primary source for a broad English-translation library. Provides downloadable text files in a consistent format.
+### quran-api (primary)
+The primary source for the catalog. Provides 440+ translations in 90+ languages in a uniform JSON format via CDN. Licensed under **The Unlicense** (public domain dedication). All 6 bundled translations and Arabic base text are sourced from here.
+
+- GitHub: https://github.com/fawazahmed0/quran-api
+- CDN base: `https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/`
+- Editions list: `https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions.json`
+- Format: JSON with `{"quran": [{"chapter": N, "verse": N, "text": "..."}]}`
+
+### Tanzil (secondary)
+Provides downloadable text files in a consistent pipe-delimited format. Listed as a secondary source for translations that also exist on Tanzil.
 
 - Translations page: https://tanzil.net/trans/
 - Arabic text downloads (canonical base text): https://tanzil.net/download/
 - Text license info (Arabic text): https://tanzil.net/docs/text_license
 - FAQ (general policy notes): https://tanzil.net/docs/faq
 
-### QUL (Tarteel)
+### QUL / Tarteel (secondary)
 Developer-friendly downloads (JSON / SQLite). Treats as an aggregator: provenance is recorded per translation.
 
 - Resources overview: https://qul.tarteel.ai/resources
 - Translations page: https://qul.tarteel.ai/resources/translation
 - Example translation pack page: https://qul.tarteel.ai/resources/translation/92
 
-### QuranEnc
+### QuranEnc (secondary)
 Curated translations with a "no modification" posture that matches the project's immutability philosophy. Provides versioning.
 
 - Home (includes terms block): https://www.quranenc.com/
 - PDF downloads index: https://quranenc.com/en/pdf
 - Example English browse page: https://quranenc.com/en/browse/english_saheeh
 
-**Deduplication:** When the same translation appears on multiple providers, the catalog contains a single entry with multiple source URLs. The `canonical_source` field indicates the preferred download provider.
+**Deduplication:** When the same translation appears on multiple providers, the catalog contains a single entry with multiple source URLs. The `canonical_source` field indicates the preferred download provider (typically `quran-api`).
 
 ---
 
@@ -120,11 +128,11 @@ These are included because the MCP aims to be **neutral and comprehensive**, not
 The server supports three acquisition paths, in order of preference:
 
 ### Automatic first-run setup (recommended)
-1. Run `quranref init --data <path>` (CLI) or let the MCP server auto-trigger on first start.
+1. Run `quran-tafseer-mcp init` (CLI) or let the MCP server auto-trigger on first start. Uses platform-default data root; override with `--data <path>`.
 2. Bundled PD translations are copied from `bundled/quran/` to the data root automatically.
-3. Arabic base text is downloaded from Tanzil (checksum-verified).
+3. Arabic base text is downloaded from quran-api (or Tanzil as fallback), checksum-verified.
 4. User is presented with the translation catalog and selects additional translations to download.
-5. Selected translations are downloaded, verified, and indexed.
+5. Selected translations are downloaded from quran-api, converted to TSV, verified, and indexed.
 
 ### MCP-guided setup (for Claude/Codex clients)
 1. Client calls `quran.setup` with `action: "status"` to check setup state.
@@ -134,8 +142,8 @@ The server supports three acquisition paths, in order of preference:
 
 ### Manual import (fallback)
 1. User obtains translation files from any source.
-2. `quranref corpus add --id <id> --file <path> --format tsv_surah_ayah_text ...`
-3. `quranref index build --id <id>`
+2. `quran-tafseer-mcp corpus add --id <id> --file <path> --format tsv_surah_ayah_text ...`
+3. `quran-tafseer-mcp index build --id <id>`
 
 ---
 
@@ -148,24 +156,23 @@ The static `catalog/translations.json` ships with the server and contains a dedu
 {
   "id": "en.sahih",
   "title": "Saheeh International",
-  "translator": "Saheeh International",
-  "year": 1997,
+  "translator": "Umm Muhammad (Saheeh International)",
   "sources": [
     {
-      "provider": "tanzil",
-      "url": "https://tanzil.net/trans/en.sahih",
-      "format": "tsv_surah_ayah_text",
-      "checksum": "sha256:abc123..."
+      "provider": "quran-api",
+      "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/eng-ummmuhammad.json",
+      "format": "json_chapter_verse_text",
+      "checksum": null
     },
     {
-      "provider": "quranenc",
-      "url": "https://quranenc.com/en/browse/english_saheeh",
-      "format": "jsonl_surah_ayah_text",
-      "checksum": "sha256:def456..."
+      "provider": "tanzil",
+      "url": "https://tanzil.net/trans/?transID=en.sahih&type=txt-2",
+      "format": "tsv_pipe_surah_ayah_text",
+      "checksum": null
     }
   ],
-  "canonical_source": "tanzil",
-  "license_note": "Personal use only",
+  "canonical_source": "quran-api",
+  "license_note": "quran-api (The Unlicense)",
   "bundled": false
 }
 ```

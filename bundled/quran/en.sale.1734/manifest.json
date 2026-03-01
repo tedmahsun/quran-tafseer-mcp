@@ -1,0 +1,13 @@
+{
+  "id": "en.sale.1734",
+  "kind": "quran_translation",
+  "language": "en",
+  "title": "The Koran (Sale)",
+  "translator": "George Sale",
+  "source": "https://en.wikisource.org/wiki/The_Koran_(Sale)",
+  "license_note": "Public domain (author died 1736)",
+  "format": "tsv_surah_ayah_text",
+  "checksum": "sha256:200bae7c67f71a26bb4a40bbe3ea6dc23e18cbb2fc26542580e731b1508df86f",
+  "origin": "bundled",
+  "year": 1734
+}

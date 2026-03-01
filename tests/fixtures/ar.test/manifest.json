@@ -1,0 +1,13 @@
+{
+  "id": "ar.test",
+  "kind": "quran_arabic",
+  "language": "ar",
+  "title": "Arabic Test Fixture",
+  "author": "Test",
+  "source": "Synthetic test data",
+  "license_note": "Test fixture",
+  "format": "tsv_surah_ayah_text",
+  "checksum": "sha256:73771c37ca2af49fad4d988a98d7553c7e46574dc2830f1d02ff84ddd429d0fd",
+  "origin": "test_fixture",
+  "created_at": "2026-02-27T00:00:00Z"
+}

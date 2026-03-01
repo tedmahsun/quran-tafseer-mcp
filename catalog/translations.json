@@ -1,0 +1,957 @@
+{
+  "version": 1,
+  "generated_at": "2026-02-27T09:17:42Z",
+  "translations": [
+    {
+      "id": "en.palmer.1880",
+      "title": "The Qur'an (Palmer)",
+      "translator": "E. H. Palmer",
+      "year": 1880,
+      "sources": [
+        {
+          "provider": "quran-api",
+          "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/eng-edwardhenrypalm.json",
+          "format": "json_chapter_verse_text",
+          "checksum": null
+        }
+      ],
+      "canonical_source": "quran-api",
+      "license_note": "Public domain (author died 1882)",
+      "bundled": true,
+      "bundled_checksum": "sha256:81f5357c6f48e502aa452257bb08e1b5ee7270d228c32cb607636f6abd653393"
+    },
+    {
+      "id": "en.rodwell.1861",
+      "title": "The Koran (Rodwell)",
+      "translator": "J. M. Rodwell",
+      "year": 1861,
+      "sources": [
+        {
+          "provider": "quran-api",
+          "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/eng-johnmedowsrodwe.json",
+          "format": "json_chapter_verse_text",
+          "checksum": null
+        }
+      ],
+      "canonical_source": "quran-api",
+      "license_note": "Public domain (author died 1900)",
+      "bundled": true,
+      "bundled_checksum": "sha256:f06a7ac2eea36b00b0249f4e57bf4fc16a693100b77e99fc1931a6279e185452"
+    },
+    {
+      "id": "en.sale.1734",
+      "title": "The Koran (Sale)",
+      "translator": "George Sale",
+      "year": 1734,
+      "sources": [
+        {
+          "provider": "quran-api",
+          "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/eng-georgesale.json",
+          "format": "json_chapter_verse_text",
+          "checksum": null
+        }
+      ],
+      "canonical_source": "quran-api",
+      "license_note": "Public domain (author died 1736)",
+      "bundled": true,
+      "bundled_checksum": "sha256:200bae7c67f71a26bb4a40bbe3ea6dc23e18cbb2fc26542580e731b1508df86f"
+    },
+    {
+      "id": "en.yusufali.1934",
+      "title": "The Holy Qur'an (Yusuf Ali)",
+      "translator": "Abdullah Yusuf Ali",
+      "year": 1934,
+      "sources": [
+        {
+          "provider": "quran-api",
+          "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/eng-abdullahyusufal.json",
+          "format": "json_chapter_verse_text",
+          "checksum": null
+        },
+        {
+          "provider": "tanzil",
+          "url": "https://tanzil.net/trans/?transID=en.yusufali&type=txt-2",
+          "format": "tsv_pipe_surah_ayah_text",
+          "checksum": null
+        }
+      ],
+      "canonical_source": "quran-api",
+      "license_note": "Project Gutenberg License",
+      "bundled": true,
+      "bundled_checksum": "sha256:f12fe8ea41c46185475f553b4a3309132a5b4e64e2ba5a120137d58ab21eb4ea"
+    },
+    {
+      "id": "en.pickthall.1930",
+      "title": "The Meaning of the Glorious Koran (Pickthall)",
+      "translator": "Mohammed Marmaduke Pickthall",
+      "year": 1930,
+      "sources": [
+        {
+          "provider": "quran-api",
+          "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/eng-mohammedmarmadu.json",
+          "format": "json_chapter_verse_text",
+          "checksum": null
+        },
+        {
+          "provider": "tanzil",
+          "url": "https://tanzil.net/trans/?transID=en.pickthall&type=txt-2",
+          "format": "tsv_pipe_surah_ayah_text",
+          "checksum": null
+        }
+      ],
+      "canonical_source": "quran-api",
+      "license_note": "Project Gutenberg License",
+      "bundled": true,
+      "bundled_checksum": "sha256:13e2b09b0b436a7e575a527553e9c941a8dcea80930b933405ea6e4a2e063909"
+    },
+    {
+      "id": "en.shakir",
+      "title": "The Quran (Shakir)",
+      "translator": "Mohammad Habib Shakir",
+      "sources": [
+        {
+          "provider": "quran-api",
+          "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/eng-mohammadhabibsh.json",
+          "format": "json_chapter_verse_text",
+          "checksum": null
+        },
+        {
+          "provider": "tanzil",
+          "url": "https://tanzil.net/trans/?transID=en.shakir&type=txt-2",
+          "format": "tsv_pipe_surah_ayah_text",
+          "checksum": null
+        }
+      ],
+      "canonical_source": "quran-api",
+      "license_note": "Project Gutenberg License",
+      "bundled": true,
+      "bundled_checksum": "sha256:ff7dfba7c62fc4b0a5111fafaf3598a6aaecc6aa233a60f08d5064afd46f924e"
+    },
+    {
+      "id": "en.abdelhaleem",
+      "title": "The Qur'an (Abdel Haleem)",
+      "translator": "Abdel Haleem",
+      "year": 2004,
+      "sources": [
+        {
+          "provider": "quran-api",
+          "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/eng-abdelhaleem.json",
+          "format": "json_chapter_verse_text",
+          "checksum": null
+        }
+      ],
+      "canonical_source": "quran-api",
+      "license_note": "Oxford University Press",
+      "bundled": false
+    },
+    {
+      "id": "en.abdulhye",
+      "title": "The Quran (Abdul Hye)",
+      "translator": "Abdul Hye",
+      "sources": [
+        {
+          "provider": "quran-api",
+          "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/eng-abdulhye.json",
+          "format": "json_chapter_verse_text",
+          "checksum": null
+        }
+      ],
+      "canonical_source": "quran-api",
+      "license_note": "quran-api (The Unlicense)",
+      "bundled": false
+    },
+    {
+      "id": "en.daryabadi",
+      "title": "Tafsir-ul-Qur'an (Daryabadi)",
+      "translator": "Abdul Majid Daryabadi",
+      "sources": [
+        {
+          "provider": "quran-api",
+          "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/eng-abdulmajiddarya.json",
+          "format": "json_chapter_verse_text",
+          "checksum": null
+        },
+        {
+          "provider": "tanzil",
+          "url": "https://tanzil.net/trans/?transID=en.daryabadi&type=txt-2",
+          "format": "tsv_pipe_surah_ayah_text",
+          "checksum": null
+        }
+      ],
+      "canonical_source": "quran-api",
+      "license_note": "quran-api (The Unlicense)",
+      "bundled": false
+    },
+    {
+      "id": "en.maududi",
+      "title": "Tafhim al-Qur'an (Maududi)",
+      "translator": "Abul A'la Maududi",
+      "sources": [
+        {
+          "provider": "quran-api",
+          "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/eng-abulalamaududi.json",
+          "format": "json_chapter_verse_text",
+          "checksum": null
+        },
+        {
+          "provider": "tanzil",
+          "url": "https://tanzil.net/trans/?transID=en.maududi&type=txt-2",
+          "format": "tsv_pipe_surah_ayah_text",
+          "checksum": null
+        }
+      ],
+      "canonical_source": "quran-api",
+      "license_note": "quran-api (The Unlicense)",
+      "bundled": false
+    },
+    {
+      "id": "en.ahmedali",
+      "title": "Al-Qur'an (Ahmed Ali)",
+      "translator": "Ahmed Ali",
+      "year": 1984,
+      "sources": [
+        {
+          "provider": "quran-api",
+          "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/eng-ahmedali.json",
+          "format": "json_chapter_verse_text",
+          "checksum": null
+        },
+        {
+          "provider": "tanzil",
+          "url": "https://tanzil.net/trans/?transID=en.ahmedali&type=txt-2",
+          "format": "tsv_pipe_surah_ayah_text",
+          "checksum": null
+        }
+      ],
+      "canonical_source": "quran-api",
+      "license_note": "quran-api (The Unlicense)",
+      "bundled": false
+    },
+    {
+      "id": "en.bewley",
+      "title": "The Noble Qur'an (Bewley)",
+      "translator": "Aisha Bewley",
+      "sources": [
+        {
+          "provider": "quran-api",
+          "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/eng-aishabewley.json",
+          "format": "json_chapter_verse_text",
+          "checksum": null
+        }
+      ],
+      "canonical_source": "quran-api",
+      "license_note": "quran-api (The Unlicense)",
+      "bundled": false
+    },
+    {
+      "id": "en.arberry",
+      "title": "The Koran Interpreted (Arberry)",
+      "translator": "A. J. Arberry",
+      "year": 1955,
+      "sources": [
+        {
+          "provider": "quran-api",
+          "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/eng-ajarberry.json",
+          "format": "json_chapter_verse_text",
+          "checksum": null
+        },
+        {
+          "provider": "tanzil",
+          "url": "https://tanzil.net/trans/?transID=en.arberry&type=txt-2",
+          "format": "tsv_pipe_surah_ayah_text",
+          "checksum": null
+        }
+      ],
+      "canonical_source": "quran-api",
+      "license_note": "quran-api (The Unlicense)",
+      "bundled": false
+    },
+    {
+      "id": "en.bilalmuhammad",
+      "title": "The Quran (Al-Bilal Muhammad et al.)",
+      "translator": "Al-Bilal Muhammad et al.",
+      "sources": [
+        {
+          "provider": "quran-api",
+          "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/eng-albilalmuhammad.json",
+          "format": "json_chapter_verse_text",
+          "checksum": null
+        }
+      ],
+      "canonical_source": "quran-api",
+      "license_note": "quran-api (The Unlicense)",
+      "bundled": false
+    },
+    {
+      "id": "en.bakhtiari",
+      "title": "The Quran (Bakhtiari Nejad)",
+      "translator": "Ali Bakhtiari Nejad",
+      "sources": [
+        {
+          "provider": "quran-api",
+          "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/eng-alibakhtiarinej.json",
+          "format": "json_chapter_verse_text",
+          "checksum": null
+        }
+      ],
+      "canonical_source": "quran-api",
+      "license_note": "quran-api (The Unlicense)",
+      "bundled": false
+    },
+    {
+      "id": "en.qarai",
+      "title": "The Qur'an (Qarai)",
+      "translator": "Ali Quli Qarai",
+      "sources": [
+        {
+          "provider": "quran-api",
+          "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/eng-aliquliqarai.json",
+          "format": "json_chapter_verse_text",
+          "checksum": null
+        },
+        {
+          "provider": "tanzil",
+          "url": "https://tanzil.net/trans/?transID=en.qarai&type=txt-2",
+          "format": "tsv_pipe_surah_ayah_text",
+          "checksum": null
+        }
+      ],
+      "canonical_source": "quran-api",
+      "license_note": "quran-api (The Unlicense)",
+      "bundled": false
+    },
+    {
+      "id": "en.unal",
+      "title": "The Qur'an (Ali Unal)",
+      "translator": "Ali Unal",
+      "sources": [
+        {
+          "provider": "quran-api",
+          "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/eng-aliunal.json",
+          "format": "json_chapter_verse_text",
+          "checksum": null
+        }
+      ],
+      "canonical_source": "quran-api",
+      "license_note": "quran-api (The Unlicense)",
+      "bundled": false
+    },
+    {
+      "id": "en.almuntakhab",
+      "title": "Al-Muntakhab fi Tafsir al-Qur'an al-Karim",
+      "translator": "Egyptian Ministry of Awqaf",
+      "sources": [
+        {
+          "provider": "quran-api",
+          "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/eng-almuntakhabfita.json",
+          "format": "json_chapter_verse_text",
+          "checksum": null
+        }
+      ],
+      "canonical_source": "quran-api",
+      "license_note": "quran-api (The Unlicense)",
+      "bundled": false
+    },
+    {
+      "id": "en.kamalomar",
+      "title": "The Quran (Dr. Kamal Omar)",
+      "translator": "Dr. Kamal Omar",
+      "sources": [
+        {
+          "provider": "quran-api",
+          "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/eng-drkamalomar.json",
+          "format": "json_chapter_verse_text",
+          "checksum": null
+        }
+      ],
+      "canonical_source": "quran-api",
+      "license_note": "quran-api (The Unlicense)",
+      "bundled": false
+    },
+    {
+      "id": "en.bakhtiar",
+      "title": "The Sublime Quran (Bakhtiar)",
+      "translator": "Dr. Laleh Bakhtiar",
+      "year": 2007,
+      "sources": [
+        {
+          "provider": "quran-api",
+          "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/eng-drlalehbakhtiar.json",
+          "format": "json_chapter_verse_text",
+          "checksum": null
+        }
+      ],
+      "canonical_source": "quran-api",
+      "license_note": "quran-api (The Unlicense)",
+      "bundled": false
+    },
+    {
+      "id": "en.munshey",
+      "title": "The Quran (Dr. Munir Munshey)",
+      "translator": "Dr. Munir Munshey",
+      "sources": [
+        {
+          "provider": "quran-api",
+          "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/eng-drmunirmunshey.json",
+          "format": "json_chapter_verse_text",
+          "checksum": null
+        }
+      ],
+      "canonical_source": "quran-api",
+      "license_note": "quran-api (The Unlicense)",
+      "bundled": false
+    },
+    {
+      "id": "en.farookmalik",
+      "title": "English Translation of the Meaning of Al-Qur'an (Farook Malik)",
+      "translator": "Farook Malik",
+      "sources": [
+        {
+          "provider": "quran-api",
+          "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/eng-farookmalik.json",
+          "format": "json_chapter_verse_text",
+          "checksum": null
+        }
+      ],
+      "canonical_source": "quran-api",
+      "license_note": "quran-api (The Unlicense)",
+      "bundled": false
+    },
+    {
+      "id": "en.aziz",
+      "title": "The Quran (Hamid S. Aziz)",
+      "translator": "Hamid S. Aziz",
+      "sources": [
+        {
+          "provider": "quran-api",
+          "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/eng-hamidsaziz.json",
+          "format": "json_chapter_verse_text",
+          "checksum": null
+        }
+      ],
+      "canonical_source": "quran-api",
+      "license_note": "quran-api (The Unlicense)",
+      "bundled": false
+    },
+    {
+      "id": "en.literal",
+      "title": "Literal Translation",
+      "translator": "Literal",
+      "sources": [
+        {
+          "provider": "quran-api",
+          "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/eng-literal.json",
+          "format": "json_chapter_verse_text",
+          "checksum": null
+        }
+      ],
+      "canonical_source": "quran-api",
+      "license_note": "quran-api (The Unlicense)",
+      "bundled": false
+    },
+    {
+      "id": "en.maududi.2",
+      "title": "Tafhim al-Qur'an (Maududi, alt.)",
+      "translator": "Abul A'la Maududi",
+      "sources": [
+        {
+          "provider": "quran-api",
+          "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/eng-maududi.json",
+          "format": "json_chapter_verse_text",
+          "checksum": null
+        }
+      ],
+      "canonical_source": "quran-api",
+      "license_note": "quran-api (The Unlicense)",
+      "bundled": false
+    },
+    {
+      "id": "en.miranees.orig",
+      "title": "The Quran (Mir Anees, Original)",
+      "translator": "Mir Anees",
+      "sources": [
+        {
+          "provider": "quran-api",
+          "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/eng-miraneesorigina.json",
+          "format": "json_chapter_verse_text",
+          "checksum": null
+        }
+      ],
+      "canonical_source": "quran-api",
+      "license_note": "quran-api (The Unlicense)",
+      "bundled": false
+    },
+    {
+      "id": "en.miraneesuddin",
+      "title": "The Quran (Mir Aneesuddin)",
+      "translator": "Mir Aneesuddin",
+      "sources": [
+        {
+          "provider": "quran-api",
+          "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/eng-miraneesuddin.json",
+          "format": "json_chapter_verse_text",
+          "checksum": null
+        }
+      ],
+      "canonical_source": "quran-api",
+      "license_note": "quran-api (The Unlicense)",
+      "bundled": false
+    },
+    {
+      "id": "en.mohammadshafi",
+      "title": "Ma'ariful Qur'an (Muhammad Shafi)",
+      "translator": "Muhammad Shafi",
+      "sources": [
+        {
+          "provider": "quran-api",
+          "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/eng-mohammadshafi.json",
+          "format": "json_chapter_verse_text",
+          "checksum": null
+        }
+      ],
+      "canonical_source": "quran-api",
+      "license_note": "quran-api (The Unlicense)",
+      "bundled": false
+    },
+    {
+      "id": "en.taqiusmani",
+      "title": "The Meanings of the Noble Qur'an (Mufti Taqi Usmani)",
+      "translator": "Mufti Taqi Usmani",
+      "sources": [
+        {
+          "provider": "quran-api",
+          "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/eng-muftitaqiusmani.json",
+          "format": "json_chapter_verse_text",
+          "checksum": null
+        }
+      ],
+      "canonical_source": "quran-api",
+      "license_note": "quran-api (The Unlicense)",
+      "bundled": false
+    },
+    {
+      "id": "en.asad",
+      "title": "The Message of the Qur'an (Asad)",
+      "translator": "Muhammad Asad",
+      "year": 1980,
+      "sources": [
+        {
+          "provider": "quran-api",
+          "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/eng-muhammadasad.json",
+          "format": "json_chapter_verse_text",
+          "checksum": null
+        }
+      ],
+      "canonical_source": "quran-api",
+      "license_note": "quran-api (The Unlicense)",
+      "bundled": false
+    },
+    {
+      "id": "en.ghali",
+      "title": "Towards Understanding the Ever-Glorious Qur'an (Ghali)",
+      "translator": "Muhammad Mahmoud Ghali",
+      "sources": [
+        {
+          "provider": "quran-api",
+          "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/eng-muhammadmahmoud.json",
+          "format": "json_chapter_verse_text",
+          "checksum": null
+        }
+      ],
+      "canonical_source": "quran-api",
+      "license_note": "quran-api (The Unlicense)",
+      "bundled": false
+    },
+    {
+      "id": "en.sarwar",
+      "title": "The Quran (Sarwar)",
+      "translator": "Muhammad Sarwar",
+      "sources": [
+        {
+          "provider": "quran-api",
+          "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/eng-muhammadsarwar.json",
+          "format": "json_chapter_verse_text",
+          "checksum": null
+        },
+        {
+          "provider": "tanzil",
+          "url": "https://tanzil.net/trans/?transID=en.sarwar&type=txt-2",
+          "format": "tsv_pipe_surah_ayah_text",
+          "checksum": null
+        }
+      ],
+      "canonical_source": "quran-api",
+      "license_note": "quran-api (The Unlicense)",
+      "bundled": false
+    },
+    {
+      "id": "en.hilali",
+      "title": "The Noble Qur'an (Hilali & Khan)",
+      "translator": "Muhammad Taqi-ud-Din al-Hilali & Muhammad Muhsin Khan",
+      "sources": [
+        {
+          "provider": "quran-api",
+          "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/eng-muhammadtaqiudd.json",
+          "format": "json_chapter_verse_text",
+          "checksum": null
+        },
+        {
+          "provider": "tanzil",
+          "url": "https://tanzil.net/trans/?transID=en.hilali&type=txt-2",
+          "format": "tsv_pipe_surah_ayah_text",
+          "checksum": null
+        }
+      ],
+      "canonical_source": "quran-api",
+      "license_note": "quran-api (The Unlicense)",
+      "bundled": false
+    },
+    {
+      "id": "en.taqiusmani.2",
+      "title": "The Meanings of the Noble Qur'an (M. Taqi Usmani, alt.)",
+      "translator": "Muhammad Taqi Usmani",
+      "sources": [
+        {
+          "provider": "quran-api",
+          "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/eng-muhammadtaqiusm.json",
+          "format": "json_chapter_verse_text",
+          "checksum": null
+        }
+      ],
+      "canonical_source": "quran-api",
+      "license_note": "quran-api (The Unlicense)",
+      "bundled": false
+    },
+    {
+      "id": "en.clearquran",
+      "title": "The Clear Quran (Khattab, Allah edition)",
+      "translator": "Mustafa Khattab",
+      "year": 2015,
+      "sources": [
+        {
+          "provider": "quran-api",
+          "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/eng-mustafakhattaba.json",
+          "format": "json_chapter_verse_text",
+          "checksum": null
+        }
+      ],
+      "canonical_source": "quran-api",
+      "license_note": "quran-api (The Unlicense)",
+      "bundled": false
+    },
+    {
+      "id": "en.clearquran.god",
+      "title": "The Clear Quran (Khattab, God edition)",
+      "translator": "Mustafa Khattab",
+      "year": 2015,
+      "sources": [
+        {
+          "provider": "quran-api",
+          "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/eng-mustafakhattabg.json",
+          "format": "json_chapter_verse_text",
+          "checksum": null
+        }
+      ],
+      "canonical_source": "quran-api",
+      "license_note": "quran-api (The Unlicense)",
+      "bundled": false
+    },
+    {
+      "id": "en.dawood",
+      "title": "The Koran (Dawood)",
+      "translator": "N. J. Dawood",
+      "year": 1956,
+      "sources": [
+        {
+          "provider": "quran-api",
+          "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/eng-njdawood.json",
+          "format": "json_chapter_verse_text",
+          "checksum": null
+        }
+      ],
+      "canonical_source": "quran-api",
+      "license_note": "quran-api (The Unlicense)",
+      "bundled": false
+    },
+    {
+      "id": "en.rwwad",
+      "title": "Translation by Rowwad Translation Center",
+      "translator": "Rowwad Translation Center",
+      "sources": [
+        {
+          "provider": "quran-api",
+          "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/eng-rowwadtranslati.json",
+          "format": "json_chapter_verse_text",
+          "checksum": null
+        }
+      ],
+      "canonical_source": "quran-api",
+      "license_note": "quran-api (The Unlicense)",
+      "bundled": false
+    },
+    {
+      "id": "en.kaskas",
+      "title": "The Qur'an (Safi Kaskas)",
+      "translator": "Safi Kaskas",
+      "sources": [
+        {
+          "provider": "quran-api",
+          "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/eng-safikaskas.json",
+          "format": "json_chapter_verse_text",
+          "checksum": null
+        }
+      ],
+      "canonical_source": "quran-api",
+      "license_note": "quran-api (The Unlicense)",
+      "bundled": false
+    },
+    {
+      "id": "en.mubarakpuri",
+      "title": "Tafsir Ibn Kathir (Mubarakpuri)",
+      "translator": "Safi-ur-Rahman al-Mubarakpuri",
+      "sources": [
+        {
+          "provider": "quran-api",
+          "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/eng-safiurrahmanalm.json",
+          "format": "json_chapter_verse_text",
+          "checksum": null
+        },
+        {
+          "provider": "tanzil",
+          "url": "https://tanzil.net/trans/?transID=en.mubarakpuri&type=txt-2",
+          "format": "tsv_pipe_surah_ayah_text",
+          "checksum": null
+        }
+      ],
+      "canonical_source": "quran-api",
+      "license_note": "quran-api (The Unlicense)",
+      "bundled": false
+    },
+    {
+      "id": "en.shabbirahmed",
+      "title": "QXP - The Quran (Shabbir Ahmed)",
+      "translator": "Shabbir Ahmed",
+      "sources": [
+        {
+          "provider": "quran-api",
+          "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/eng-shabbirahmed.json",
+          "format": "json_chapter_verse_text",
+          "checksum": null
+        }
+      ],
+      "canonical_source": "quran-api",
+      "license_note": "quran-api (The Unlicense)",
+      "bundled": false
+    },
+    {
+      "id": "en.vickarahamed",
+      "title": "The Quran (Syed Vickar Ahamed)",
+      "translator": "Syed Vickar Ahamed",
+      "sources": [
+        {
+          "provider": "quran-api",
+          "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/eng-syedvickarahame.json",
+          "format": "json_chapter_verse_text",
+          "checksum": null
+        }
+      ],
+      "canonical_source": "quran-api",
+      "license_note": "quran-api (The Unlicense)",
+      "bundled": false
+    },
+    {
+      "id": "en.itani",
+      "title": "Quran in English (Itani)",
+      "translator": "Talal Itani",
+      "year": 2012,
+      "sources": [
+        {
+          "provider": "quran-api",
+          "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/eng-talalitani.json",
+          "format": "json_chapter_verse_text",
+          "checksum": null
+        }
+      ],
+      "canonical_source": "quran-api",
+      "license_note": "Creative Commons Attribution",
+      "bundled": false
+    },
+    {
+      "id": "en.itani.new",
+      "title": "Quran in English (Itani, New Translation)",
+      "translator": "Talal A. Itani",
+      "sources": [
+        {
+          "provider": "quran-api",
+          "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/eng-talalaitaninewt.json",
+          "format": "json_chapter_verse_text",
+          "checksum": null
+        }
+      ],
+      "canonical_source": "quran-api",
+      "license_note": "quran-api (The Unlicense)",
+      "bundled": false
+    },
+    {
+      "id": "en.irving",
+      "title": "The Qur'an (T.B. Irving)",
+      "translator": "T. B. Irving",
+      "year": 1985,
+      "sources": [
+        {
+          "provider": "quran-api",
+          "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/eng-tbirving.json",
+          "format": "json_chapter_verse_text",
+          "checksum": null
+        }
+      ],
+      "canonical_source": "quran-api",
+      "license_note": "quran-api (The Unlicense)",
+      "bundled": false
+    },
+    {
+      "id": "en.monotheist",
+      "title": "The Quran: A Monotheist Translation",
+      "translator": "The Monotheist Group",
+      "year": 2011,
+      "sources": [
+        {
+          "provider": "quran-api",
+          "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/eng-themonotheistgr.json",
+          "format": "json_chapter_verse_text",
+          "checksum": null
+        }
+      ],
+      "canonical_source": "quran-api",
+      "license_note": "quran-api (The Unlicense)",
+      "bundled": false
+    },
+    {
+      "id": "en.studyquran",
+      "title": "The Study Quran",
+      "translator": "Seyyed Hossein Nasr et al.",
+      "year": 2015,
+      "sources": [
+        {
+          "provider": "quran-api",
+          "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/eng-thestudyquran.json",
+          "format": "json_chapter_verse_text",
+          "checksum": null
+        }
+      ],
+      "canonical_source": "quran-api",
+      "license_note": "quran-api (The Unlicense)",
+      "bundled": false
+    },
+    {
+      "id": "en.sahih",
+      "title": "Saheeh International",
+      "translator": "Umm Muhammad (Saheeh International)",
+      "sources": [
+        {
+          "provider": "quran-api",
+          "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/eng-ummmuhammad.json",
+          "format": "json_chapter_verse_text",
+          "checksum": null
+        },
+        {
+          "provider": "tanzil",
+          "url": "https://tanzil.net/trans/?transID=en.sahih&type=txt-2",
+          "format": "tsv_pipe_surah_ayah_text",
+          "checksum": null
+        }
+      ],
+      "canonical_source": "quran-api",
+      "license_note": "quran-api (The Unlicense)",
+      "bundled": false
+    },
+    {
+      "id": "en.wahiduddin",
+      "title": "The Quran (Wahiduddin Khan)",
+      "translator": "Wahiduddin Khan",
+      "sources": [
+        {
+          "provider": "quran-api",
+          "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/eng-wahiduddinkhan.json",
+          "format": "json_chapter_verse_text",
+          "checksum": null
+        },
+        {
+          "provider": "tanzil",
+          "url": "https://tanzil.net/trans/?transID=en.wahiduddin&type=txt-2",
+          "format": "tsv_pipe_surah_ayah_text",
+          "checksum": null
+        }
+      ],
+      "canonical_source": "quran-api",
+      "license_note": "quran-api (The Unlicense)",
+      "bundled": false
+    },
+    {
+      "id": "en.yusufali.orig",
+      "title": "The Holy Qur'an (Yusuf Ali, Original)",
+      "translator": "Abdullah Yusuf Ali",
+      "year": 1934,
+      "sources": [
+        {
+          "provider": "quran-api",
+          "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/eng-yusufaliorig.json",
+          "format": "json_chapter_verse_text",
+          "checksum": null
+        }
+      ],
+      "canonical_source": "quran-api",
+      "license_note": "quran-api (The Unlicense)",
+      "bundled": false
+    }
+  ],
+  "arabic": [
+    {
+      "id": "ar.uthmani",
+      "title": "Uthmani Script (Hafs)",
+      "description": "Standard Uthmani script with full diacritics, Hafs reading",
+      "sources": [
+        {
+          "provider": "quran-api",
+          "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/ara-quranuthmanihaf.json",
+          "format": "json_chapter_verse_text",
+          "checksum": null
+        }
+      ],
+      "canonical_source": "quran-api",
+      "license_note": "Quran text",
+      "bundled": true,
+      "bundled_checksum": "sha256:dbae8de5e757ba61de58a8d906dcb1ef7d3d930c3f26564e4fa062a47effa580"
+    },
+    {
+      "id": "ar.simple",
+      "title": "Simple Script",
+      "description": "Modern Arabic orthography (Imla'i) with diacritics",
+      "sources": [
+        {
+          "provider": "quran-api",
+          "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/ara-quransimple.json",
+          "format": "json_chapter_verse_text",
+          "checksum": null
+        }
+      ],
+      "canonical_source": "quran-api",
+      "license_note": "Quran text"
+    },
+    {
+      "id": "ar.uthmani.min",
+      "title": "Uthmani Script (Hafs, minimal diacritics)",
+      "description": "Uthmani script with minimal diacritical marks",
+      "sources": [
+        {
+          "provider": "quran-api",
+          "url": "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/ara-quranuthmanihaf1.json",
+          "format": "json_chapter_verse_text",
+          "checksum": null
+        }
+      ],
+      "canonical_source": "quran-api",
+      "license_note": "Quran text"
+    }
+  ]
+}

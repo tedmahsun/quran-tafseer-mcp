@@ -1,0 +1,13 @@
+{
+  "id": "en.yusufali.1934",
+  "kind": "quran_translation",
+  "language": "en",
+  "title": "The Holy Qur'an (Yusuf Ali)",
+  "translator": "Abdullah Yusuf Ali",
+  "source": "https://www.gutenberg.org/ebooks/16955",
+  "license_note": "Project Gutenberg License",
+  "format": "tsv_surah_ayah_text",
+  "checksum": "sha256:f12fe8ea41c46185475f553b4a3309132a5b4e64e2ba5a120137d58ab21eb4ea",
+  "origin": "bundled",
+  "year": 1934
+}

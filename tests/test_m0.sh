@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# M0 integration test for quranref MCP server
+# M0 integration test for quran-tafseer-mcp MCP server
 # Pipes 6 JSON-RPC messages and shows responses.
 #
 # Usage: bash tests/test_m0.sh [path-to-binary]
 
 set -euo pipefail
 
-BINARY="${1:-./quranref}"
+BINARY="${1:-./quran-tafseer-mcp}"
 TMPDIR_TEST="$(mktemp -d)"
 DATA_ROOT="$TMPDIR_TEST/data"
 mkdir -p "$DATA_ROOT"
@@ -61,18 +61,18 @@ R5=$(echo "$RESPONSES" | sed -n '5p')
 
 echo "Checking responses:"
 
-# 1. initialize — expect serverInfo with name "quranref"
+# 1. initialize — expect serverInfo with name "quran-tafseer-mcp"
 # FPC AsJSON formats with spaces around colons, so use regex
-check_response "initialize returns serverInfo" '"name" *: *"quranref"' "$R1"
+check_response "initialize returns serverInfo" '"name" *: *"quran-tafseer-mcp"' "$R1"
 check_response "initialize returns protocolVersion" '"protocolVersion" *: *"2024-11-05"' "$R1"
 
 # 2. notifications/initialized — no response, so R2 should be tools/list response
 
-# 3. tools/list — expect empty tools array
-check_response "tools/list returns empty tools array" '"tools" *: *\[\]' "$R2"
+# 3. tools/list — expect tools array (populated since M1)
+check_response "tools/list returns tools array" '"tools" *: *\[' "$R2"
 
-# 4. tools/call — expect error for unknown tool (R3)
-check_response "tools/call returns error for unknown tool" 'Unknown tool' "$R3"
+# 4. tools/call — quran.get_ayah now handled (since M1), returns a result
+check_response "tools/call for known tool returns result" '"result"' "$R3"
 
 # 5. ping — expect empty result object (R4)
 check_response "ping returns empty result" '"result" *: *\{\}' "$R4"

@@ -1,6 +1,6 @@
 # Quran Tafseer MCP (Free Pascal) — Implementation Plan
 
-> Scope: **Quran only (for now)**. No interpretation/tafsir. Local corpora. Side‑by‑side comparison across many English translations plus Arabic base text.
+> Scope: **Quran only (for now)**. No interpretation/tafseer. Local corpora. Side‑by‑side comparison across many English translations plus Arabic base text.
 
 ## 1) Project goals and non‑goals
 
@@ -16,12 +16,12 @@
 - Support a **private/local corpus library**:
   - Users can import legally obtained translations locally.
   - Repo can remain clean (no copyrighted corpora committed).
-- Provide a **guided first-run experience** with bundled public-domain translations, automatic Arabic base text download, and interactive selection of additional translations from a static catalog.
+- Provide a **guided first-run experience** with bundled public-domain translations and Arabic base text, with interactive selection of additional translations from a static catalog.
 
 ### Non‑goals (explicit)
 - No interpretation, meaning extraction, doctrinal claims, ranking “best” translation, or commentary generation.
 - No hadith support in this phase.
-- No online REST lookups during **runtime tool execution** (setup phase may download from allowlisted domains: `tanzil.net`, `qul.tarteel.ai`, `quranenc.com`).
+- No online REST lookups during **runtime tool execution** (setup phase may download from allowlisted domains: `cdn.jsdelivr.net` (quran-api), `tanzil.net`, `qul.tarteel.ai`, `quranenc.com`).
 
 ---
 
@@ -44,7 +44,7 @@
 5. **Setup system** (same binary, `init`/`setup` subcommands + auto-trigger on MCP start)
    - First-run detection (empty or missing data root)
    - Bundled corpus installation (copy from `bundled/` to data root)
-   - Arabic base text download from Tanzil
+   - Arabic base text download from quran-api (or Tanzil as fallback)
    - Interactive translation selection from static catalog
    - `quran.setup` MCP tool for conversational setup via Claude/Codex
 
@@ -89,7 +89,7 @@ user_data_root/
 
 ### Corpus manifest schema (`manifest.json`)
 Minimal fields:
-- `id` (string, stable): e.g., `ar.tanzil.uthmani`, `en.palmer.1880`, `en.user.yusufali`
+- `id` (string, stable): e.g., `ar.uthmani`, `en.palmer.1880`, `en.user.yusufali`
 - `kind`: `quran_arabic` | `quran_translation`
 - `language`: `ar` | `en`
 - `title`: human readable
@@ -112,11 +112,11 @@ Entry fields:
 - `translator`
 - `year` (optional)
 - `sources` (array): one or more download sources
-  - `provider`: `"tanzil"` | `"tarteel"` | `"quranenc"`
+  - `provider`: `"quran-api"` | `"tanzil"` | `"tarteel"` | `"quranenc"`
   - `url`: download URL
-  - `format`: `"tsv_surah_ayah_text"` | `"jsonl_surah_ayah_text"` | `"sqlite"`
-  - `checksum`: SHA-256 of the expected downloaded file from this source
-- `canonical_source`: preferred provider for download
+  - `format`: `"json_chapter_verse_text"` | `"tsv_surah_ayah_text"` | `"tsv_pipe_surah_ayah_text"` | `"jsonl_surah_ayah_text"` | `"sqlite"`
+  - `checksum`: SHA-256 of the expected downloaded file from this source (null if not yet verified)
+- `canonical_source`: preferred provider for download (typically `"quran-api"`)
 - `license_note`: freeform text
 - `bundled` (bool): whether this translation is also shipped in `bundled/quran/`
 
@@ -161,14 +161,15 @@ Entry fields:
      - `status`: returns setup state (what's installed, is setup complete)
      - `list_available`: full deduplicated catalog with install status per entry
      - `install_bundled`: copy bundled PD texts to data root (idempotent)
-     - `download_arabic`: download Arabic base text from Tanzil with checksum verification
+     - `download_arabic`: download Arabic base text from quran-api with checksum verification
      - `download`: download specific corpus IDs from catalog with checksum verification
    - Only tool permitted to make network calls (allowlisted domains only)
 
-### Optional tool (v1.1+) — strictly descriptive
+### `quran.diff` (implemented in M5)
 - `quran.diff`
-  - Input: `{ "surah": X, "ayah": Y, "translations": ["..."] }`
-  - Output: **machine-readable diffs only** (token spans/edits), no prose.
+  - Input: `{ "surah": X, "ayah": Y, "translations": ["id1", "id2", ...] }`
+  - Output: word-level LCS diff ops (equal/delete/insert) with similarity statistics.
+  - First translation is the base; each subsequent one is compared against it.
 
 ### Output formatting modes
 Provide `format` argument for display convenience:
@@ -181,6 +182,7 @@ Provide `format` argument for display convenience:
 
 ### Supported import formats (v1)
 - `tsv_surah_ayah_text`: `surah<TAB>ayah<TAB>text`
+- `json_chapter_verse_text`: quran-api format: `{"quran": [{"chapter":1, "verse":1, "text":"..."}]}`
 - `jsonl_surah_ayah_text`: one JSON per line: `{"surah":2,"ayah":255,"text":"..."}`
 - `sqlite`: if corpus ships as a DB, read it directly (still treat as immutable)
 
@@ -200,10 +202,11 @@ The 6 public-domain translations in `bundled/quran/` are copied to the user's da
 
 ### Download-based corpus installation
 For translations from the catalog:
-1. HTTP fetch from the canonical source URL (HTTPS only, allowlisted domains)
-2. SHA-256 checksum verification against the source's `checksum` field in the catalog
+1. HTTP fetch from the canonical source URL (HTTPS only, allowlisted domains: `cdn.jsdelivr.net`, `tanzil.net`, `quranenc.com`)
+2. SHA-256 checksum verification against the source's `checksum` field in the catalog (null = skip with warning)
 3. Parse/convert to `original.tsv` if needed:
-   - Tanzil `txt-2`: convert pipe delimiter (`|`) to tab (`\t`), strip comment lines (`#`) and blank lines
+   - quran-api JSON (`json_chapter_verse_text`): parse `{"quran": [{"chapter", "verse", "text"}]}`, write as TSV
+   - Tanzil `txt-2` (`tsv_pipe_surah_ayah_text`): convert pipe delimiter (`|`) to tab (`\t`), strip comment lines (`#`) and blank lines
    - QuranEnc CSV: parse CSV, drop `id` and `footnotes` columns, write as TSV
    - QuranEnc SQLite: read `translations` table directly (store as `original.sqlite`, format `sqlite`)
 4. Generate `manifest.json` with `origin: "downloaded"`, `download_source`, `download_date`
@@ -235,36 +238,38 @@ Normalization policy (index-only):
 ## 7) CLI commands (developer & user workflow)
 
 ### Build/run commands (proposed)
-- `quranref build` (optional wrapper) or external scripts.
+- `quran-tafseer-mcp build` (optional wrapper) or external scripts.
 
 ### First-run setup
-- `quranref init --data <path>`
+All commands use a platform-default data root when `--data` is omitted (Windows: `%LOCALAPPDATA%\quran-tafseer-mcp`, Linux/macOS: `$XDG_DATA_HOME/quran-tafseer-mcp`).
+- `quran-tafseer-mcp init [--data <path>]`
   - Creates folder structure and starter config
   - Installs bundled PD translations (copies from `bundled/` to data root)
-  - Downloads Arabic base text from Tanzil
+  - Downloads Arabic base text from quran-api (or Tanzil as fallback)
   - Enters interactive translation selection (lists catalog, user picks additional translations to download)
-- `quranref init --data <path> --bundled-only`
+- `quran-tafseer-mcp init [--data <path>] --bundled-only`
   - Installs bundled corpora only, skips downloads (offline-friendly)
-- `quranref init --data <path> --all`
+- `quran-tafseer-mcp init [--data <path>] --all`
   - Installs bundled + downloads all catalog translations (non-interactive)
-- `quranref setup`
+- `quran-tafseer-mcp setup`
   - Re-run setup on an existing data root (e.g., to download additional translations)
 
 ### Catalog browsing
-- `quranref catalog list`
+- `quran-tafseer-mcp catalog list`
   - Lists all available translations from the static catalog with install status
-- `quranref catalog refresh`
+- `quran-tafseer-mcp catalog refresh`
   - Regenerates the catalog file (development use)
 
 ### Corpus management
-- `quranref corpus add --id <id> --kind translation --lang en --file <path> --format tsv_surah_ayah_text --title "..." --translator "..."`
-- `quranref corpus list`
-- `quranref corpus validate [--id <id>]`
-- `quranref index build [--id <id>|--all]`
-- `quranref index status`
+- `quran-tafseer-mcp corpus add [--data <path>] --id <id> --kind translation --lang en --file <path> --format tsv_surah_ayah_text --title "..." --translator "..."`
+- `quran-tafseer-mcp corpus list [--data <path>]`
+- `quran-tafseer-mcp corpus validate [--data <path>] [--id <id>]`
+- `quran-tafseer-mcp index build [--data <path>] [--id <id>|--all]`
+- `quran-tafseer-mcp index status`
 
 ### MCP run
-- `quranref mcp --data <path> [--log-level info|debug]`
+- `quran-tafseer-mcp mcp [--data <path>] [--log-level info|debug]`
+  - When `--data` is omitted, uses the platform-default data root.
   - The MCP server always completes the `initialize` handshake first. After handshake, if the data root is empty or missing, the server:
     1. Auto-installs bundled corpora (silent, no network).
     2. Returns `quran.setup` in `tools/list` with a description indicating setup is recommended.
@@ -277,8 +282,8 @@ Normalization policy (index-only):
 ### Libraries/modules
 - JSON: `fpjson`, `jsonparser`
 - SQLite: `sqlite3` unit (or a small wrapper)
-- Hashing: SHA‑256 (use available FPC units or vendor a tiny implementation)
-- HTTP: `fphttpclient` from `fcl-web` (setup phase downloads only)
+- Hashing: SHA-256 — self-contained implementation in `u_downloader.pas` (FPC 3.2.2 lacks `fpsha256`)
+- HTTP: Platform-conditional — **WinINet** (native Windows API, no external deps) on Windows via `{$IFDEF MSWINDOWS}`, **fphttpclient + opensslsockets** on Linux/macOS (setup phase downloads only)
 
 ### Qur'an metadata unit
 - `u_quran_metadata.pas` — Static Qur'an structural data:
@@ -290,11 +295,10 @@ Normalization policy (index-only):
   - Source: well-known canonical data, e.g., Tanzil's surah list or any standard Qur'an metadata
 
 ### Setup-related units
-- `u_setup.pas`: first-run detection, bundled corpus installation, download orchestration
-- `u_catalog.pas`: static translation catalog loading and querying
-- `u_downloader.pas`: HTTP download with checksum verification (allowlisted domains only)
-- `u_tools_setup.pas`: tool handler for `quran.setup`
-- `u_corpus_installer.pas`: corpus installation logic (bundled copy + downloaded import + manifest generation)
+- `u_catalog.pas`: static translation catalog loading and querying (translations + Arabic editions)
+- `u_downloader.pas`: HTTP download with domain allowlist, SHA-256 checksum verification, platform-conditional backend (WinINet on Windows, fphttpclient elsewhere)
+- `u_tools_setup.pas`: tool handler for `quran.setup` (status, list_available, install_bundled, download_arabic, download)
+- `u_corpus_installer.pas`: corpus installation logic (bundled copy + downloaded import + format conversion + manifest generation)
 
 ### Corpus loading strategy
 
@@ -327,8 +331,8 @@ All application-specific error codes are defined in a shared constants unit and 
 - **Never** write logs to stdout (stderr only)
 
 ### Framing
-- Implement **Content-Length** style framing (LSP-like) if required by a client, otherwise newline-delimited JSON.
-- Prefer implementing Content-Length framing to maximize compatibility.
+- **Implemented:** Newline-delimited JSON (per MCP spec 2024-11-05). Each JSON-RPC message is one line terminated by LF.
+- Content-Length framing may be added behind a flag later if a client requires it.
 
 ---
 
@@ -336,8 +340,9 @@ All application-specific error codes are defined in a shared constants unit and 
 
 ### Claude Code (stdio server)
 Document a sample config and CLI add command in README, including:
-- Server command: `quranref mcp --data <user_data_root>`
-- Ensure paths are absolute on Windows.
+- Server command: `quran-tafseer-mcp mcp` (uses platform-default data root; no `--data` needed)
+- Override with `--data <path>` for custom locations.
+- Example: `claude mcp add quran-tafseer-mcp -- /path/to/quran-tafseer-mcp mcp`
 
 ### Codex (stdio server)
 Document:
@@ -393,7 +398,7 @@ Document:
 - For a small sample corpus, verify exact output strings match expected (ensures no accidental normalization).
 
 ### Test framework
-FPCUnit (ships with Free Pascal). Test runner is a separate console program (`quranref_tests.lpr`) that runs all test suites.
+FPCUnit (ships with Free Pascal). Test runner is a separate console program (`quran-tafseer-mcp_tests.lpr`) that runs all test suites.
 
 ### Test corpus fixtures
 A minimal test corpus (`tests/fixtures/`) with:
@@ -433,102 +438,150 @@ Launch the server binary as a subprocess, send JSON-RPC messages over stdin, rea
 
 ## 12) Milestones (suggested)
 
-### Pre-milestone — Corpus preparation and catalog seeding
+> **Maintenance rule:** When a milestone is completed, mark it with "✅ COMPLETED" in its heading and update the bullet points to reflect what was actually delivered (including any deviations from the original plan). This keeps the plan accurate as a living document.
 
-This pre-milestone covers all manual/scripted data preparation that must happen before M0 can start. The deliverables are committed to the repo and used by later milestones.
+### Pre-milestone — Corpus preparation and catalog seeding ✅ COMPLETED
+
+This pre-milestone covers all scripted data preparation that must happen before M1.5a can start. The deliverables are committed to the repo and used by later milestones.
+
+**Key discovery:** The [fawazahmed0/quran-api](https://github.com/fawazahmed0/quran-api) project provides 440+ translations in 90+ languages — including all 6 bundled PD translations and Arabic base text — in a uniform JSON format via CDN. Licensed under **The Unlicense** (public domain dedication). This replaces the original plan of scraping Wikisource + parsing Gutenberg + downloading from Tanzil/QuranEnc. **quran-api is now the single primary source** for both bundled corpora and the downloadable catalog.
 
 #### Bundled corpus preparation
 
-The 6 public-domain translations in `bundled/quran/` do not yet exist. They must be parsed from their original sources into the `tsv_surah_ayah_text` format:
+All 6 public-domain translations were downloaded from quran-api CDN (`json_chapter_verse_text` format), converted to `tsv_surah_ayah_text`, verified (6236 lines each, correct surah/ayah sequence), and stored with SHA-256 checksums.
 
-1. **Wikisource PD texts (Palmer, Rodwell, Sale):** Manual or scripted download from Wikisource. Parse HTML/wikitext into `surah<TAB>ayah<TAB>text` TSV. Store in `bundled/quran/en.<id>/original.tsv`.
-2. **Gutenberg triple-pack (Yusuf Ali, Pickthall, Shakir):** Download from `gutenberg.org/ebooks/16955`. The plain-text file contains all three translations interleaved. A one-time parsing script splits them into 3 separate TSV files.
-3. **Manifest generation:** For each bundled corpus, generate `manifest.json` with `origin: "bundled"`, computed SHA-256 checksum, and metadata (title, translator, year, license_note, format).
-4. **Verification:** Each TSV must have exactly 6236 lines (one per verse). Surah/ayah pairs must match the canonical counts from `u_quran_metadata.pas`.
+- **Source:** quran-api CDN (format: `{"quran": [{"chapter": N, "verse": N, "text": "..."}]}`)
+- **Conversion:** `scripts/prepare_bundled.py` downloads, converts JSON → TSV, verifies, computes SHA-256, generates manifests
+- **Bundled translations:** Palmer, Rodwell, Sale (Wikisource PD), Yusuf Ali, Pickthall, Shakir (Gutenberg)
+- Each `bundled/quran/<id>/` contains `original.tsv` (6236 lines) + `manifest.json`
 
-#### Catalog seeding (checksum population)
+#### Catalog seeding
 
-`catalog/translations.json` references SHA-256 checksums per download source. These checksums require actual file downloads to compute:
-
-- **Bundled corpora:** Checksums are computed from the `original.tsv` files already in `bundled/quran/` — known at repo build time. These are filled in during bundled corpus preparation above.
-- **Download sources (Tanzil, QuranEnc):** Checksums are computed once using a developer-only script (`scripts/seed_catalog.py`) that downloads each URL, computes SHA-256, and writes the checksums into `catalog/translations.json`.
-- The seeding script runs once during initial catalog creation and again whenever a provider updates their files. It is **not** shipped to end users.
-- Until the seeding script runs, catalog entries for downloadable sources use `"checksum": null` (meaning "not yet verified"). The downloader in M1.5b treats `null` checksum as "skip verification with a warning log."
-- The seeding script is a **prerequisite for M1.5b** (not M1.5a, which is offline-only).
+`catalog/translations.json` was built by `scripts/seed_catalog.py` with:
+- 50 English translations from quran-api (6 bundled, 44 downloadable)
+- 3 Arabic editions (Uthmani Hafs, Simple, Uthmani minimal diacritics)
+- Bundled entries include `bundled_checksum` (SHA-256 of installed TSV)
+- Download source checksums are `null` (populated on-demand during M1.5b seeding)
+- Tanzil added as secondary source for 13 translations that exist on both providers
 
 #### Scripts (developer tools, not shipped)
 
 | Script | Purpose |
 |--------|---------|
-| `scripts/parse_wikisource.py` | One-time Wikisource HTML/wikitext → TSV parser for Palmer, Rodwell, Sale |
-| `scripts/parse_gutenberg.py` | One-time Gutenberg plain-text splitter → 3 TSV files for Yusuf Ali, Pickthall, Shakir |
-| `scripts/seed_catalog.py` | Downloads each catalog source URL, computes SHA-256, writes checksums into `catalog/translations.json` |
+| `scripts/prepare_bundled.py` | Downloads 6 PD translations from quran-api CDN, converts to TSV, verifies, generates manifests |
+| `scripts/seed_catalog.py` | Builds `catalog/translations.json` from hardcoded edition list + bundled checksums |
 
 These scripts live in `scripts/` and are gitignored from releases.
 
 #### Deliverables
 - `bundled/quran/` with 6 subdirectories, each containing `original.tsv` + `manifest.json`
-- `catalog/translations.json` with checksums for bundled sources filled in (download source checksums may be `null` initially)
+- `catalog/translations.json` with 50 English translations + 3 Arabic editions
 - Developer scripts in `scripts/`
 
 #### Dependencies
-- **Prerequisite for M1:** Needs at least one English corpus to test `get_ayah`.
-- **Prerequisite for M1.5a:** Needs all 6 bundled corpora.
-- **Catalog seeding prerequisite for M1.5b:** Needs download source checksums populated.
+- **Prerequisite for M1:** Needs at least one English corpus to test `get_ayah`. ✅ Available.
+- **Prerequisite for M1.5a:** Needs all 6 bundled corpora. ✅ Available.
+- **Catalog seeding prerequisite for M1.5b:** Needs download source checksums populated (currently `null`, will be filled by a seeding pass).
 
-### Milestone 0 — Skeleton
+### Milestone 0 — Skeleton ✅ COMPLETED
 - Repo scaffolding
-- Stdio JSON-RPC loop
+- Stdio JSON-RPC loop (newline-delimited JSON per MCP spec, not Content-Length)
 - `tools/list` returns empty set
-- Basic logging
+- Basic logging to stderr with level filtering
 - `u_quran_metadata.pas`: static surah data (names, ayah counts, aliases) compiled into the binary
+- MCP dispatch: `initialize`, `notifications/initialized`, `tools/list`, `tools/call`, `ping`
+- CLI: `quran-tafseer-mcp mcp [--data <path>] [--log-level]`, `--help`, `--version`
+- Parse error handling: malformed JSON returns `-32700` and server continues
+- Integration test script: `tests/test_m0.sh` (6 tests, all passing)
 
-### Milestone 1 — Corpus + lookup
-- Corpus manifests
-- `quran.list_translations`
-- `quran.get_ayah` from one Arabic corpus + one English corpus
-- `quran.resolve_ref` (depends only on `u_quran_metadata.pas` static data, not on corpora or indexes)
+### Milestone 1 — Corpus + lookup ✅ COMPLETED
+- `u_corpus_manifest.pas`: Manifest parsing from `manifest.json` with validation (id, kind, language, title, format, author/translator, checksum, origin)
+- `u_corpus_reader.pas`: TSV reader loading verses into flat array indexed by `surah*1000+ayah` for O(1) lookup
+- `u_corpus_store.pas`: Corpus store scanning `<data_root>/corpora/quran/` for subdirectories, loading manifests + verse data, providing `FindCorpus()`, `LookupVerse()`, `GetCorpusByIndex()`
+- `u_tools_quran.pas`: Tool handlers for all three M1 tools
+- `quran.list_translations`: Lists installed translation and Arabic corpora with metadata, supports `lang` filter
+- `quran.get_ayah`: Fetches Arabic + N translations for a single verse with citations; supports `translations` (array or `"all"`), `include_arabic`, `arabic_id` params; proper error handling for out-of-range and missing corpora
+- `quran.resolve_ref`: Normalizes references in multiple formats (`2:255`, `Q 2:255`, `Al-Baqarah 255`, surah name only); returns canonical `(surah, ayah)` with surah metadata
+- Tool schemas registered in `tools/list` with full JSON Schema `inputSchema` definitions
+- Test fixtures: `ar.test` and `en.test` corpora (18 verses each covering surahs 1, 2, 114)
+- Integration test: `tests/test_m1.sh` (31 tests, all passing)
 
-### Milestone 1.5a — Bundled corpora + catalog (no network)
-- Bundled corpus directory with 6 PD translations (pre-parsed TSV + manifests) in `bundled/quran/`
-- Static translation catalog (`catalog/translations.json`)
-- `u_catalog.pas`: catalog loading, querying, install-status tracking
-- `u_corpus_installer.pas`: corpus installation logic (bundled copy + manifest validation)
-- `quranref init --bundled-only` CLI flow
-- Auto-trigger on MCP start: complete `initialize` handshake first, then install bundled corpora if data root is empty
+### Milestone 1.5a — Bundled corpora + catalog (no network) ✅ COMPLETED
+- `u_catalog.pas`: Catalog loading from `catalog/translations.json` (53 entries: 50 English + 3 Arabic), querying by ID/index, language filtering, install-status cross-referencing with corpus store
+- `u_corpus_installer.pas`: Bundled corpus installation with idempotency (skips if `manifest.json` exists at destination), stream-based file copy, install report (installed/skipped/errors)
+- `u_tools_setup.pas`: `quran.setup` MCP tool handler with action-based dispatch — `status`, `list_available`, `install_bundled` fully implemented; `download_arabic` and `download` return "not available" stubs (deferred to M1.5b)
+- `u_corpus_store.pas`: Added `SetBundledPath`/`GetBundledPath` for bundled path storage
+- `u_tools_quran.pas`: Exported `BuildToolResult`, `BuildToolError`, `MakeTextContent` to interface (shared with `u_tools_setup`)
+- `u_mcp.pas`: Exported `MakeStringProp`, `MakeIntProp`, `MakeBoolProp` to interface; registered `quran.setup` in `tools/list` (4 tools total); added setup-incomplete guard (`ERR_SETUP_INCOMPLETE` / `-32001` when `GetCorpusCount = 0` and tool is not `quran.setup`)
+- `quran-tafseer-mcp.lpr`: Auto-trigger on MCP start (installs bundled corpora if data root is empty after `initialize` handshake); `--bundled-path` CLI override; catalog loading from `catalog/translations.json`; CLI `init --bundled-only` command
+- Bundled corpus directory: 6 PD translations in `bundled/quran/` (en.palmer.1880, en.rodwell.1861, en.sale.1734, en.yusufali.1934, en.pickthall.1930, en.shakir)
+- Static translation catalog: `catalog/translations.json` with 53 entries
+- Integration test: `tests/test_m1_5a.sh` (32 tests across 8 sections, all passing)
+- Backward compatible: M0 tests (6/6) and M1 tests (31/31) still pass
 
-### Milestone 1.5b — Downloader + setup tool (network access)
-- `u_downloader.pas`: HTTP client + SHA-256 checksum verification
-- `u_setup.pas`: first-run detection, download orchestration
-- `u_tools_setup.pas`: `quran.setup` MCP tool handler (all 5 sub-actions)
-- `quranref init` full flow (bundled install + Arabic download + interactive selection)
-- `quranref init --all` flag
-- `quran.setup` MCP tool (all sub-actions: status, list_available, install_bundled, download_arabic, download)
+### Milestone 1.5b — Downloader + setup tool (network access) ✅ COMPLETED
+- `u_downloader.pas`: HTTP download with domain allowlist (HTTPS only, 4 allowed domains), self-contained SHA-256 implementation (~130 lines, no external dependency), platform-conditional HTTP backend: **WinINet** on Windows (native TLS, no OpenSSL required), **fphttpclient + opensslsockets** on Linux/macOS
+- `u_catalog.pas`: Extended to parse `"arabic"` array from catalog JSON (3 Arabic editions: ar.uthmani, ar.simple, ar.uthmani.min); added `FindArabicEntry()`, `GetArabicCatalogCount()`, `FindPreferredSource()` for source selection
+- `u_corpus_installer.pas`: Format converters for quran-api JSON (`json_chapter_verse_text` → TSV) and Tanzil pipe format (`tsv_pipe_surah_ayah_text` → TSV); `DownloadAndInstallCatalogEntry()` orchestrates lookup → download → verify → convert → install with idempotency (skips if manifest exists); generated manifests include `origin: "downloaded"`, `download_source`, `download_date`
+- `u_tools_setup.pas`: Replaced download stubs with working `HandleSetupDownloadArabic` (downloads ar.uthmani or custom `arabic_id`, re-scans store) and `HandleSetupDownload` (iterates `ids` array, collects per-ID results with installed/skipped/error status); updated tool schema with `ids` (array) and `arabic_id` (string) params
+- `quran-tafseer-mcp.lpr`: Full `init` flow — Step 1 (bundled install, includes ar.uthmani) → Step 2 (load catalog) → Step 3 (if `--all`, download all catalog entries + non-bundled Arabic variants); continues on individual failures, exits 1 if any failed; added `u_downloader` to uses
+- `quran-tafseer-mcp.lpi`: Added `u_downloader.pas` to project units
+- `tests/test_m1_5a.sh`: Updated section E tests (download handlers no longer stubs)
+- `tests/test_m1_5b.sh`: 21 tests across Tier 1 (offline, 11 tests: unknown ID error, no stub messages, empty/missing ids params, schema updated, init --all recognized) and Tier 2 (network, gated by `QURANREF_NETWORK_TESTS=1`, 10 tests: download ar.uthmani with 6236-line TSV + manifest verification, download en.sahih, re-download idempotency)
+- **Deviation from plan:** No `u_setup.pas` created — download orchestration lives in `u_corpus_installer.pas` (`DownloadAndInstallCatalogEntry`) and `u_tools_setup.pas` (MCP handlers), keeping the architecture simpler
+- **Platform fix:** Originally used `fphttpclient + opensslsockets` everywhere, but FPC 3.2.2 on Windows requires OpenSSL 1.1 DLLs which are no longer commonly available. Switched to WinINet on Windows (native TLS via `{$IFDEF MSWINDOWS}` conditional compilation) for zero-dependency HTTPS support
+- Backward compatible: M0 (6/6), M1 (31/31), M1.5a (32/32) tests still pass
 
-### Milestone 2 — Range + search
-- `quran.get_range`
-- SQLite indexing
-- `quran.search` (English)
+### Milestone 2 — Range + search ✅ COMPLETED
+- `u_index_sqlite.pas`: SQLite FTS5 per-corpus indexing — `BuildIndex`, `BuildAllIndexes`, `SearchIndex`, `IndexExists` with `unicode61` tokenizer; schema: `verses(rowid, surah, ayah, text)` + `verses_fts` FTS5 virtual table; snippet extraction via `snippet()` function; rank conversion from FTS5 negative rank to positive score
+- `u_tools_quran.pas`: `HandleGetRange` — single-surah verse range retrieval with dynamic verse limits based on translation count (1-2: 25, 3-6: 15, 7+: 10 verses max), truncation with `continuation` hint, per-corpus citation deduplication; `HandleSearch` — full-text search across selected translation corpora with cross-corpus result merging by (surah, ayah) key, per-corpus snippet collection, score-ranked output
+- `u_mcp.pas`: `BuildToolSchema_GetRange` and `BuildToolSchema_Search` with full JSON Schema `inputSchema` definitions; dispatch entries in `HandleToolsCall`; tools/list now returns 6 tools; server version bumped to `0.3.0`
+- `quran-tafseer-mcp.lpr`: Auto-build missing indexes at MCP startup after corpus store initialization; `index build` CLI subcommand (`quran-tafseer-mcp index build [--data <path>] [--id <corpus-id> | --all]`); updated usage text
+- `quran-tafseer-mcp.lpi`: Added `u_index_sqlite.pas` to project units
+- **Runtime dependency:** `sqlite3.dll` required on Windows (not shipped, user must provide); FPC `sqlite3` unit provides Pascal bindings with dynamic linking
+- **Deviation from plan:** FTS5 `SQLITE_TRANSIENT` constant handled via inline type cast `sqlite3_destructor_type(Pointer(-1))` due to FPC 3.2.2 type system constraints
+- Integration test: `tests/test_m2.sh` (35 tests across 6 sections: tools/list, get_range happy path, get_range errors, search happy path, search errors, index auto-build — all passing)
+- Backward compatible: M0 (6/6), M1 (31/31), M1.5a (32/32) tests still pass
 
-### Milestone 3 — Robust imports
-- `corpus add/validate`
-- Support TSV + JSONL
-- Better error messages & integrity reporting
+### Milestone 3 — Robust imports ✅ COMPLETED
+- `u_corpus_reader.pas`: Added `LoadJsonlFile()` for JSONL format (`jsonl_surah_ayah_text`) — parses one JSON object per line (`{"surah":N,"ayah":N,"text":"..."}`), skips empty/comment lines, validates surah (1–114) and ayah (1–999) ranges, reports line numbers in warnings; wired into `LoadCorpus()` case statement; exported both `LoadTsvFile()` and `LoadJsonlFile()` in the interface for reuse by installer
+- `u_corpus_manifest.pas`: Exported `ParseFormat()`, `FormatToStr()`, `KindToStr()`, `OriginToStr()` helper functions for format/kind/origin enum ↔ string conversion
+- `u_corpus_installer.pas`: Added `ComputeFileChecksum()` (wraps `ComputeSha256Hex` from `u_downloader.pas` to hash a file, returns `sha256:<hex>`); added `InstallLocalCorpus()` — validates format, trial-loads file to verify it parses, copies to `<DataRoot>/corpora/quran/<id>/original.<ext>`, computes checksum, generates `manifest.json` with `origin: "manual_import"`
+- `quran-tafseer-mcp.lpr`: Three new CLI subcommands under `corpus`:
+  - `corpus list [--data <path>]`: scans `<DataRoot>/corpora/quran/` for manifests, prints id/title/author/language/kind/format/origin/checksum for each
+  - `corpus validate [--data <path>] [--id <id>]`: validates single or all corpora — checks manifest fields, finds data file, recomputes SHA-256 and compares against `manifest.checksum`, loads and counts verses vs TOTAL_AYAH_COUNT (6236); reports VALID/INCOMPLETE/CHECKSUM MISMATCH/INVALID
+  - `corpus add [--data <path>] --id <id> --file <path> --format <fmt> --title "..." [--translator "..."] [--kind translation] [--lang en]`: validates required params, trial-loads file, installs via `InstallLocalCorpus`, builds FTS5 index
+- `u_mcp.pas`: Server version bumped to `0.4.0`
+- Test fixtures: `tests/fixtures/en.testjsonl/` with `manifest.json` (format: `jsonl_surah_ayah_text`) and `original.jsonl` (18 verses matching en.test content)
+- Integration test: `tests/test_m3.sh` (30 tests across 7 sections: JSONL loading via MCP, corpus list, corpus validate, corpus add TSV, corpus add JSONL, corpus add errors, version check — all passing)
+- Backward compatible: M0 (6/6), M1 (31/31), M1.5a (32/32), M2 (35/35) tests still pass
 
-### Milestone 4 — Client polish
-- `format:"terminal"` output mode
-- Documentation for Claude Code + Codex setup
-- CI builds on Windows/Linux/macOS
+### Milestone 4 — Client polish ✅ COMPLETED
+- `u_format_terminal.pas`: Terminal rendering mode — converts structured JSON tool responses to preformatted text for terminal display. Arabic text on its own lines to avoid BiDi issues. Functions: `FormatGetAyahAsTerminal`, `FormatGetRangeAsTerminal`, `FormatSearchAsTerminal`, `FormatListTranslationsAsTerminal`, `FormatResolveRefAsTerminal`
+- `format` parameter added to all tool schemas (`structured` default, `terminal` option) with JSON Schema enum validation
+- `u_tools_quran.pas`: All 5 tool handlers (`list_translations`, `get_ayah`, `get_range`, `resolve_ref`, `search`) check `format` parameter and dispatch to terminal formatter or JSON serialization
+- Dynamic verse limits for terminal mode in `get_range`: 1-2 translations → 15 verses, 3-6 → 10, 7+ → 7 (lower than structured mode's 25/15/10)
+- `u_mcp.pas`: Server version bumped to `0.5.0`; `MakeFormatProp` helper builds the format property schema
+- `README.md`: Complete project documentation — features, building, quick start, client setup (Claude Code CLI + config, Codex CLI + config, Windows path handling), CLI commands, output format examples, data layout, supported formats, license
+- `.github/workflows/ci.yml`: GitHub Actions CI for Windows/Linux/macOS — builds with `lazbuild`, runs all test suites (M0–M4), uploads binary artifacts
+- Integration test: `tests/test_m4.sh` (39 tests across 9 sections: version, schema format property, get_ayah terminal, get_range terminal, list_translations terminal, resolve_ref terminal, search terminal, default format, backward compatibility — all passing)
+- Backward compatible: M0 (6/6), M1 (31/31), M1.5a (32/32), M2 (35/35), M3 (30/30) tests still pass
 
-### Milestone 5 (optional) — diff
-- `quran.diff` with machine-readable diffs only
+### Milestone 5 — diff ✅ COMPLETED
+- `quran.diff` tool: Word-level diff between translations for a single verse. First translation in the array is the base; subsequent ones are compared against it using LCS (Longest Common Subsequence) algorithm.
+- `u_tools_quran.pas`: Added `TDiffOpKind` (dokEqual/dokDelete/dokInsert), `TDiffOp` record, `TDiffOpArray`/`TWordArray` types, `Tokenize()` (whitespace splitter), `ComputeWordDiff()` (LCS-based word diff with merged consecutive ops), `HandleDiff()` (full tool handler with validation, diff computation, stats, terminal support)
+- `u_format_terminal.pas`: Added `FormatDiffAsTerminal` — renders diff as `= equal`, `- delete`, `+ insert` markers with stats summary
+- `u_mcp.pas`: Added `BuildToolSchema_Diff` (surah, ayah, translations array with minItems:2, format), registered in `HandleToolsList` and `HandleToolsCall` dispatch; server version bumped to `0.6.0`
+- Output includes: ref, base corpus ID, diffs array (each with corpus_id, ops [{op, text}], stats {equal, deleted, inserted, similarity})
+- Integration test: `tests/test_m5.sh` (27 tests across 6 sections: schema, basic diff, identical texts, error cases, terminal format, version — all passing)
+- Backward compatible: M0 (6/6), M1 (31/31), M1.5a (32/32), M2 (35/35), M3 (30/30), M4 (39/39) tests still pass
 
 ---
 
 ## 13) Open questions to resolve early
 
 ### Resolved
-- **Message framing:** Content-Length (LSP-style) is the default. Newline-delimited JSON may be supported behind a flag.
+- **Message framing:** Newline-delimited JSON (per MCP spec 2024-11-05). Content-Length was originally planned but the MCP spec requires newline-delimited for stdio transport.
 - **Preferred on-disk corpus format:** TSV (`tsv_surah_ayah_text`) is the primary format. JSONL is supported. `line_114` format is deferred (see section 5).
 - **MCP auto-trigger blocking:** The MCP server always completes the `initialize` handshake first. After handshake, if the data root is empty/missing, bundled corpora are installed silently, and `quran.setup` is advertised in `tools/list`. Non-setup tools return a structured error (`code: -32001`) until Arabic text is installed.
 - **Gutenberg pre-parsing:** One-time script produces 3 separate TSV files (one per translation). See `docs/quran_translations_resource_list.md` section 3.
@@ -547,19 +600,27 @@ These scripts live in `scripts/` and are gitignored from releases.
   - Optionally detect the client name from `initialize` → `clientInfo` and auto-lower limits for Codex (~8 verses).
 
 ### Resolved (Arabic variants)
-- **Multiple Arabic variants:** Yes, support as separate corpora with IDs `ar.tanzil.<variant>`.
-  - Tanzil offers 6 variants across two script families:
-    - **Uthmani** (Rasm Uthmani — historical Quranic orthography): `uthmani` (full diacritics), `uthmani-min` (minimal diacritics)
-    - **Simple/Imlaei** (Rasm Imla'i — modern Arabic orthography): `simple` (full), `simple-enhanced` (no tajweed markers), `simple-min` (minimal), `simple-clean` (no diacritics at all)
-  - **v1 default:** `ar.tanzil.uthmani` (matches the Medina Mushaf, used by Quran.com, most widely recognized).
-  - **v1 scope:** Download and install only Uthmani. The catalog lists all 6 for optional install via `quran.setup`.
-  - **FTS indexing (M2):** Optionally use `ar.tanzil.simple-clean` (consonantal skeleton only) as the normalization source for Arabic FTS. The index uses clean text for matching; the server always returns the user's selected variant (typically Uthmani) in results.
-  - Proposed corpus IDs: `ar.tanzil.uthmani`, `ar.tanzil.uthmani-min`, `ar.tanzil.simple`, `ar.tanzil.simple-enhanced`, `ar.tanzil.simple-min`, `ar.tanzil.simple-clean`.
+- **Multiple Arabic variants:** Yes, support as separate corpora with IDs `ar.<variant>`.
+  - quran-api and Tanzil both offer multiple Arabic script variants across two script families:
+    - **Uthmani** (Rasm Uthmani — historical Quranic orthography): `uthmani` (full diacritics), `uthmani.min` (minimal diacritics)
+    - **Simple/Imlaei** (Rasm Imla'i — modern Arabic orthography): `simple` (full), and others
+  - **v1 default:** `ar.uthmani` (Hafs reading, matches the Medina Mushaf, used by Quran.com, most widely recognized).
+  - **v1 scope:** Download and install only Uthmani. The catalog lists 3 Arabic editions for optional install via `quran.setup` (from quran-api).
+  - **FTS indexing (M2):** Optionally use a simplified Arabic text (consonantal skeleton only) as the normalization source for Arabic FTS. The index uses clean text for matching; the server always returns the user's selected variant (typically Uthmani) in results.
+  - Catalog Arabic IDs: `ar.uthmani`, `ar.simple`, `ar.uthmani.min`.
 
 ### Resolved (download URLs)
 - **Exact download URL formats per provider:**
 
-  **Tanzil (primary — no auth, pipe-delimited text):**
+  **quran-api (primary — no auth, JSON via CDN):**
+  - Editions list: `GET https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions.json`
+  - Per-edition: `GET https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/{key}.json`
+    - Response: `{"quran": [{"chapter": 1, "verse": 1, "text": "..."}]}`. UTF-8. 6236 entries.
+    - The downloader converts JSON to TSV when writing `original.tsv`.
+  - 52 English translations + multiple Arabic editions available.
+  - License: The Unlicense (public domain dedication). Individual translation copyrights may still apply.
+
+  **Tanzil (secondary — no auth, pipe-delimited text):**
   - Translations: `GET https://tanzil.net/trans/?transID={lang.id}&type=txt-2`
     - Response: pipe-delimited (`surah|ayah|text`), one verse per line, comments (`#`) at end of file. UTF-8. 6236 data lines.
     - The downloader converts `|` delimiter to `\t` when writing `original.tsv`.

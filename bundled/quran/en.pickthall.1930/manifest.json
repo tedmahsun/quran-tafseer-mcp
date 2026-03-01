@@ -1,0 +1,13 @@
+{
+  "id": "en.pickthall.1930",
+  "kind": "quran_translation",
+  "language": "en",
+  "title": "The Meaning of the Glorious Koran (Pickthall)",
+  "translator": "Mohammed Marmaduke Pickthall",
+  "source": "https://www.gutenberg.org/ebooks/16955",
+  "license_note": "Project Gutenberg License",
+  "format": "tsv_surah_ayah_text",
+  "checksum": "sha256:13e2b09b0b436a7e575a527553e9c941a8dcea80930b933405ea6e4a2e063909",
+  "origin": "bundled",
+  "year": 1930
+}

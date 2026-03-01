@@ -1,0 +1,12 @@
+{
+  "id": "en.shakir",
+  "kind": "quran_translation",
+  "language": "en",
+  "title": "The Quran (Shakir)",
+  "translator": "Mohammad Habib Shakir",
+  "source": "https://www.gutenberg.org/ebooks/16955",
+  "license_note": "Project Gutenberg License",
+  "format": "tsv_surah_ayah_text",
+  "checksum": "sha256:ff7dfba7c62fc4b0a5111fafaf3598a6aaecc6aa233a60f08d5064afd46f924e",
+  "origin": "bundled"
+}

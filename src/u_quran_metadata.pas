@@ -128,10 +128,18 @@ begin
     Result := Trim(Copy(S, 7, Length(S)))
   else if Copy(S, 1, 5) = 'sura ' then
     Result := Trim(Copy(S, 6, Length(S)))
+  else if Copy(S, 1, 7) = 'suratul' then
+  begin
+    // Handle "suratul-baqarah", "suratul baqarah"
+    if (Length(S) > 7) and ((S[8] = '-') or (S[8] = ' ')) then
+      Result := Trim(Copy(S, 9, Length(S)))
+    else
+      Result := Trim(Copy(S, 8, Length(S)));
+  end
   else if Copy(S, 1, 5) = 'surat' then
   begin
     // Handle "surat " and "suratu" etc.
-    if (Length(S) > 5) and (S[6] = ' ') then
+    if (Length(S) > 5) and ((S[6] = ' ') or (S[6] = '-')) then
       Result := Trim(Copy(S, 7, Length(S)))
     else
       Result := S;

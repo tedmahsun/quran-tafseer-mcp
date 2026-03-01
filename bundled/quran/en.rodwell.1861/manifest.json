@@ -1,0 +1,13 @@
+{
+  "id": "en.rodwell.1861",
+  "kind": "quran_translation",
+  "language": "en",
+  "title": "The Koran (Rodwell)",
+  "translator": "J. M. Rodwell",
+  "source": "https://en.wikisource.org/wiki/The_Koran_(Rodwell)",
+  "license_note": "Public domain (author died 1900)",
+  "format": "tsv_surah_ayah_text",
+  "checksum": "sha256:f06a7ac2eea36b00b0249f4e57bf4fc16a693100b77e99fc1931a6279e185452",
+  "origin": "bundled",
+  "year": 1861
+}

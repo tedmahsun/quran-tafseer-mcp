@@ -1,0 +1,79 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+jobs:
+  build-and-test:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            binary: quran-tafseer-mcp.exe
+          - os: ubuntu-latest
+            binary: quran-tafseer-mcp
+          - os: macos-latest
+            binary: quran-tafseer-mcp
+
+    runs-on: ${{ matrix.os }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Free Pascal (Windows)
+        if: runner.os == 'Windows'
+        uses: nickg/setup-fpc@v1
+        with:
+          version: '3.2.2'
+          lazarus-version: '3.6'
+
+      - name: Install Free Pascal (Linux)
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y fpc lazarus libsqlite3-0
+
+      - name: Install Free Pascal (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew install fpc lazarus sqlite
+
+      - name: Build (Debug)
+        run: lazbuild --build-mode=Debug quran-tafseer-mcp.lpi
+
+      - name: Run M0 tests
+        run: bash tests/test_m0.sh ./${{ matrix.binary }}
+
+      - name: Run M1 tests
+        run: bash tests/test_m1.sh ./${{ matrix.binary }}
+
+      - name: Run M1.5a tests
+        run: bash tests/test_m1_5a.sh ./${{ matrix.binary }}
+
+      - name: Run M1.5b tests (offline only)
+        run: bash tests/test_m1_5b.sh ./${{ matrix.binary }}
+
+      - name: Run M2 tests
+        run: bash tests/test_m2.sh ./${{ matrix.binary }}
+
+      - name: Run M3 tests
+        run: bash tests/test_m3.sh ./${{ matrix.binary }}
+
+      - name: Run M4 tests
+        run: bash tests/test_m4.sh ./${{ matrix.binary }}
+
+      - name: Run M5 tests
+        run: bash tests/test_m5.sh ./${{ matrix.binary }}
+
+      - name: Build (Release)
+        run: lazbuild --build-mode=Release quran-tafseer-mcp.lpi
+
+      - name: Upload binary
+        uses: actions/upload-artifact@v4
+        with:
+          name: quran-tafseer-mcp-${{ runner.os }}
+          path: ${{ matrix.binary }}

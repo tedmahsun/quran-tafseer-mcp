@@ -1,0 +1,13 @@
+{
+  "id": "en.testjsonl",
+  "kind": "quran_translation",
+  "language": "en",
+  "title": "English JSONL Test Fixture",
+  "translator": "Test",
+  "source": "Synthetic test data",
+  "license_note": "Test fixture",
+  "format": "jsonl_surah_ayah_text",
+  "checksum": "sha256:a34bac1f5424646773c21968bfb45d58242bacdd4130cbe36442d6d72d8e8df9",
+  "origin": "test_fixture",
+  "created_at": "2026-03-01T00:00:00Z"
+}
