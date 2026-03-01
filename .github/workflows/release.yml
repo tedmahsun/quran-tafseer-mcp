@@ -79,6 +79,12 @@ jobs:
         with:
           path: artifacts
 
+      - name: Rename artifacts
+        run: |
+          mv artifacts/quran-tafseer-mcp-windows-x64.exe/quran-tafseer-mcp.exe artifacts/quran-tafseer-mcp-windows-x64.exe.bin
+          mv artifacts/quran-tafseer-mcp-linux-x64/quran-tafseer-mcp artifacts/quran-tafseer-mcp-linux-x64.bin
+          mv artifacts/quran-tafseer-mcp-macos-arm64/quran-tafseer-mcp artifacts/quran-tafseer-mcp-macos-arm64.bin
+
       - name: Create release
         env:
           GH_TOKEN: ${{ github.token }}
@@ -87,6 +93,6 @@ jobs:
             --repo "${{ github.repository }}" \
             --title "${{ github.ref_name }}" \
             --generate-notes \
-            artifacts/quran-tafseer-mcp-windows-x64.exe/quran-tafseer-mcp.exe#quran-tafseer-mcp-windows-x64.exe \
-            artifacts/quran-tafseer-mcp-linux-x64/quran-tafseer-mcp#quran-tafseer-mcp-linux-x64 \
-            artifacts/quran-tafseer-mcp-macos-arm64/quran-tafseer-mcp#quran-tafseer-mcp-macos-arm64
+            artifacts/quran-tafseer-mcp-windows-x64.exe.bin#quran-tafseer-mcp-windows-x64.exe \
+            artifacts/quran-tafseer-mcp-linux-x64.bin#quran-tafseer-mcp-linux-x64 \
+            artifacts/quran-tafseer-mcp-macos-arm64.bin#quran-tafseer-mcp-macos-arm64

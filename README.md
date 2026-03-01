@@ -29,13 +29,13 @@ A neutral Quran reference MCP server written in Free Pascal. Provides side-by-si
 
 All tools accept `format: "terminal"` for preformatted text output (default: `"structured"` JSON).
 
-## Building
+## Installation
 
-This project is written in [Free Pascal](https://www.freepascal.org/) and uses the [Lazarus](https://www.lazarus-ide.org/) build tool `lazbuild`. If you don't have these installed, here's how to set up for each platform.
+Pre-built binaries for Windows, Linux, and macOS are available on the [Releases](https://github.com/tedmahsun/quran-tafseer-mcp/releases) page.
 
-### Building from source
+## Building from source
 
-No binaries are provided so you will need to build from source.
+This project is written in [Free Pascal](https://www.freepascal.org/) and uses the [Lazarus](https://www.lazarus-ide.org/) build tool `lazbuild`.
 
 #### Windows
 
