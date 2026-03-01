@@ -43,7 +43,12 @@ jobs:
         run: |
           Invoke-WebRequest -Uri "https://www.sqlite.org/2024/sqlite-dll-win-x64-3470200.zip" -OutFile sqlite.zip
           Expand-Archive sqlite.zip -DestinationPath .
-          Copy-Item sqlite3.dll -Destination .
+
+      - name: Install Bash 5 (macOS)
+        if: runner.os == 'macOS'
+        run: |
+          brew install bash
+          echo "$(brew --prefix)/bin" >> $GITHUB_PATH
 
       - name: Build
         run: lazbuild quran-tafseer-mcp.lpi
