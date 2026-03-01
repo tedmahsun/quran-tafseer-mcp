@@ -1,4 +1,4 @@
-# quran-tafseer-mcp — Quran Tafseer MCP Server
+# Quran Tafseer MCP Server
 
 **v1.0.0**
 
