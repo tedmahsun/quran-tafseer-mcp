@@ -1,5 +1,7 @@
 # Quran Tafseer MCP Server
 
+[![CI](https://github.com/tedmahsun/quran-tafseer-mcp/actions/workflows/ci.yml/badge.svg)](https://github.com/tedmahsun/quran-tafseer-mcp/actions/workflows/ci.yml)
+
 **v1.0.0**
 
 A neutral Quran reference MCP server written in Free Pascal. Provides side-by-side comparison of Arabic base text and English translations over the MCP stdio protocol. The server provides **materials only** — no interpretation, commentary, or tafseer.
