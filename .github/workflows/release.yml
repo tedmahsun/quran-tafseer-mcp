@@ -30,10 +30,7 @@ jobs:
 
       - name: Install Free Pascal (Windows)
         if: runner.os == 'Windows'
-        uses: nickg/setup-fpc@v1
-        with:
-          version: '3.2.2'
-          lazarus-version: '3.6'
+        run: choco install lazarus
 
       - name: Install Free Pascal (Linux)
         if: runner.os == 'Linux'
