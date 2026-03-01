@@ -146,7 +146,12 @@ cp -r "$DATA_ROOT/corpora/quran/en.test" "$DATA_ROOT/corpora/quran/en.tampered"
 # Modify the data file
 echo "999	999	TAMPERED LINE" >> "$DATA_ROOT/corpora/quran/en.tampered/original.tsv"
 # Update manifest id
-sed -i 's/"en.test"/"en.tampered"/' "$DATA_ROOT/corpora/quran/en.tampered/manifest.json"
+# BSD sed (macOS) requires -i '' whereas GNU sed uses -i without arg
+if [[ "$OSTYPE" == "darwin"* ]]; then
+    sed -i '' 's/"en.test"/"en.tampered"/' "$DATA_ROOT/corpora/quran/en.tampered/manifest.json"
+else
+    sed -i 's/"en.test"/"en.tampered"/' "$DATA_ROOT/corpora/quran/en.tampered/manifest.json"
+fi
 
 VALIDATE_TAMPERED=$("$BINARY" corpus validate --data "$DATA_ROOT" --id en.tampered --log-level error 2>/dev/null || true)
 check_response "tampered corpus shows CHECKSUM MISMATCH" "CHECKSUM MISMATCH.*en\\.tampered" "$VALIDATE_TAMPERED"
