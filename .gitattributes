@@ -1,0 +1,7 @@
+# Keep corpus data files with LF endings on all platforms (checksums depend on it)
+*.tsv text eol=lf
+*.jsonl text eol=lf
+*.json text eol=lf
+
+# Shell scripts should also use LF
+*.sh text eol=lf
