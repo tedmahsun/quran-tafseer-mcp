@@ -24,20 +24,15 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install Free Pascal (Windows)
-        if: runner.os == 'Windows'
-        run: choco install lazarus
+      - name: Install Lazarus
+        uses: gcarreno/setup-lazarus@v3
+        with:
+          lazarus-version: stable
+          with-cache: true
 
-      - name: Install Free Pascal (Linux)
+      - name: Install SQLite (Linux)
         if: runner.os == 'Linux'
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y fpc lazarus libsqlite3-0
-
-      - name: Install Free Pascal (macOS)
-        if: runner.os == 'macOS'
-        run: |
-          brew install fpc lazarus sqlite
+        run: sudo apt-get update && sudo apt-get install -y libsqlite3-0
 
       - name: Build (Debug)
         run: lazbuild --build-mode=Debug quran-tafseer-mcp.lpi
